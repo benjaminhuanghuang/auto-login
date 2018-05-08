@@ -35,6 +35,9 @@
             }
             return "";
         }
+        function createTimeStamp() {
+            return Date();
+        }
 
         var username = getUrlParameter('user');
         var password = getUrlParameter('pswd');
@@ -54,8 +57,8 @@
             }).done(function (response) {
                 const token = response.token;
                 console.log(token);
-                localStorage.setItem('asf_auth', "123");
-                localStorage.setItem('global_countdown_last_rest_timestamp', "123");
+                localStorage.setItem('asf_auth', JSON.stringify({ expires: createTimeStamp() }));
+                localStorage.setItem('global_countdown_last_rest_timestamp', createTimeStamp());
                 $.ajax({
                     url: userApi,
                     type: "GET",
