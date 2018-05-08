@@ -62,6 +62,81 @@
                 });
             });
         }
+
+        function getToken(username, password) {
+			return new Promise((resolve, reject) => {
+				$.ajax({
+					url: tokenApi,
+					type: "POST",
+					data: JSON.stringify({
+						password: password,
+						username: username
+					}),
+					contentType: "application/json; charset=utf-8",
+					dataType: "json"
+				}).done(function (response) {
+					resolve(response.token);
+				});
+			});
+		}
+		
+		function getUsers(token) {
+			return new Promise((resolve, reject) => {
+				$.ajax({
+						url: userApi,
+						type: "GET",
+						headers: {
+							'Authorization': 'Bearer ' + token
+						},
+						data: JSON.stringify({
+							password: password,
+							username: username
+						}),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json"
+					}).done(function (user) {
+						resolve(user);
+				});
+			});
+		}
+        var username = getUrlParameter('user');
+        var password = getUrlParameter('pswd');
+		var redirect = getUrlParameter('redirect');
+        const tokenApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net/v1/token/create';
+        const userApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net/v1/users/current';
+        getToken(username, password).then((token) => {	
+			localStorage.setItem('asf_auth', JSON.stringify({ expires: createTimeStamp() }));
+			localStorage.setItem('global_countdown_last_rest_timestamp', createTimeStamp());
+			getUsers(token).then((user) => {
+				document.cookie = "bing=" + user.bingMappingKey + "; expires=0; path=/";
+				document.cookie = "token=" + token + "; expires=0; path=/";
+				
+				switch(redirect){
+					case "Accounts":
+						window.location = '/accounts';
+						break;
+					case "Locations":
+						window.location = '/locations';
+						break;
+					case "Jobs":
+						window.location = '/jobs';
+						break;
+						
+					case "AccountView":
+						var accId = getUrlParameter('accId');
+						var dbSource = getUrlParameter('dbSource');
+						window.location = 'exposure/accounts/' + accId + '/dbSource/' + dbSource;
+						break;
+					case "LocationView":
+						var locId = getUrlParameter('locId');
+						var dbSource = getUrlParameter('dbSource');
+						var country = getUrlParameter('country');
+						window.location = 'locations/'+locId+'/dbSource/'+dbSource+'/country/' + country
+						break;
+				}
+			});
+		});
+
     </script>
 </head>
 
