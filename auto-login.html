@@ -20,30 +20,15 @@
             var results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         };
-
-        function getCookie(cname) {
-            var name = cname + "="
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
         function createTimeStamp() {
-            return Date();
+            var d = new Date();
+            d.setHours(d.getHours() + 2);
+            return d.getTime();
         }
-
         var username = getUrlParameter('user');
         var password = getUrlParameter('pswd');
-        const tokenApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net:6001/v1/token/create';
-        const userApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net:6001/v1/users/current';
-
+        const tokenApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net/v1/token/create';
+        const userApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net/v1/users/current';
         if (username && password) {
             $.ajax({
                 url: tokenApi,
@@ -56,7 +41,6 @@
                 dataType: "json"
             }).done(function (response) {
                 const token = response.token;
-                console.log(token);
                 localStorage.setItem('asf_auth', JSON.stringify({ expires: createTimeStamp() }));
                 localStorage.setItem('global_countdown_last_rest_timestamp', createTimeStamp());
                 $.ajax({
@@ -71,8 +55,10 @@
                     }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
-                }).done(function (msg) {
-                    alert("Data Saved: " + msg);
+                }).done(function (user) {
+                    document.cookie = "bing=" + user.bingMappingKey + "; expires=0; path=/";
+                    document.cookie = "token=" + token + "; expires=0; path=/";
+                    window.location = '/accounts';
                 });
             });
         }
