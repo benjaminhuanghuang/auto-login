@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>RiskBrowser-Login</title>
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script type="text/javascript" src="Inc/js/Functions.js"></script>
+    <link rel="shortcut icon" href="Images/favicon.ico">
+    <link rel="icon" type="image/gif" href="Images/animated_favicon1.gif">
+    <link href="Inc/css/site.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+    <script>
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+
+        function getCookie(cname) {
+            var name = cname + "="
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        var username = getUrlParameter('user');
+        var password = getUrlParameter('pswd');
+        const tokenApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net:6001/v1/token/create';
+        const userApi = 'https://rb18smoke-ci01.lab.rmsonecloud.net:6001/v1/users/current';
+
+        if (username && password) {
+            $.ajax({
+                url: tokenApi,
+                type: "POST",
+                data: JSON.stringify({
+                    password: password,
+                    username: username
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done(function (response) {
+                const token = response.token;
+                console.log(token);
+                localStorage.setItem 'asf_auth', "123"
+                localStorage.setItem 'global_countdown_last_rest_timestamp', "123"
+                $.ajax({
+                    url: userApi,
+                    type: "GET",
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    data: JSON.stringify({
+                        password: password,
+                        username: username
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                }).done(function (msg) {
+                    alert("Data Saved: " + msg);
+                });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <a href="http://localhost:8080/auto-login.html?user=all&pswd=all">login</a>
+</body>
+
+</html>
