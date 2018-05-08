@@ -125,13 +125,13 @@
 					case "AccountView":
 						var accId = getUrlParameter('accId');
 						var dbSource = getUrlParameter('dbSource');
-						window.location = 'exposure/accounts/' + accId + '/dbSource/' + dbSource;
+						window.location = `exposure/accounts/${accId}/dbSource/${dbSource}`;
 						break;
 					case "LocationView":
 						var locId = getUrlParameter('locId');
 						var dbSource = getUrlParameter('dbSource');
 						var country = getUrlParameter('country');
-						window.location = 'locations/'+locId+'/dbSource/'+dbSource+'/country/' + country
+						window.location = `locations/${locId}/dbSource/${dbSource}/country/${country}`;
 						break;
 				}
 			});
